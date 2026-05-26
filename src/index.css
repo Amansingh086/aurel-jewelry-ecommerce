@@ -1,0 +1,175 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #fbf7ef;
+}
+
+::selection {
+  background: #d4ff4f;
+  color: #17201c;
+}
+
+.font-serif {
+  font-family: "Cormorant Garamond", Georgia, serif;
+}
+
+.ticker {
+  width: max-content;
+  animation: ticker 22s linear infinite;
+}
+
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.jewel-viewer {
+  --metal: #d7a84f;
+  position: relative;
+  width: min(64vw, 320px);
+  height: min(64vw, 320px);
+  margin: 0 auto;
+  perspective: 900px;
+}
+
+.jewel-core {
+  position: absolute;
+  inset: 18%;
+  transform-style: preserve-3d;
+  animation: jewel-spin 7s linear infinite;
+}
+
+.ring .jewel-core {
+  border: 28px solid var(--metal);
+  border-radius: 999px;
+  box-shadow:
+    inset 0 0 34px rgba(255, 255, 255, 0.28),
+    0 24px 80px rgba(231, 200, 132, 0.26);
+}
+
+.ring .jewel-core::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -52px;
+  width: 84px;
+  height: 84px;
+  transform: translateX(-50%) rotate(45deg);
+  background: linear-gradient(135deg, #ffffff, #cfe8ff 42%, #ffffff 70%);
+  clip-path: polygon(50% 0, 100% 38%, 78% 100%, 22% 100%, 0 38%);
+  box-shadow: 0 0 42px rgba(255, 255, 255, 0.6);
+}
+
+.necklace .jewel-core {
+  border: 18px solid var(--metal);
+  border-top-color: transparent;
+  border-radius: 0 0 999px 999px;
+  transform-origin: center 20%;
+}
+
+.necklace .jewel-core::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -38px;
+  width: 64px;
+  height: 84px;
+  transform: translateX(-50%);
+  background: linear-gradient(160deg, #ffffff, #d4ebff 45%, #ffffff);
+  clip-path: polygon(50% 0, 100% 58%, 50% 100%, 0 58%);
+}
+
+.earrings .jewel-core {
+  inset: 10% 20%;
+}
+
+.earrings .jewel-core::before,
+.earrings .jewel-core::after {
+  content: "";
+  position: absolute;
+  top: 16%;
+  width: 82px;
+  height: 160px;
+  border: 16px solid var(--metal);
+  border-radius: 999px 999px 999px 999px;
+  background: linear-gradient(#ffffff, transparent 34%);
+}
+
+.earrings .jewel-core::before {
+  left: 10%;
+}
+
+.earrings .jewel-core::after {
+  right: 10%;
+}
+
+.bracelet .jewel-core {
+  border: 24px dotted var(--metal);
+  border-radius: 999px;
+  box-shadow: 0 20px 70px rgba(231, 200, 132, 0.24);
+}
+
+.jewel-sparkle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  rotate: 45deg;
+  background: #ffffff;
+  box-shadow: 0 0 28px rgba(255, 255, 255, 0.9);
+  animation: twinkle 1.8s ease-in-out infinite alternate;
+}
+
+.jewel-sparkle.one {
+  left: 22%;
+  top: 18%;
+}
+
+.jewel-sparkle.two {
+  right: 18%;
+  top: 34%;
+  animation-delay: 0.4s;
+}
+
+.jewel-sparkle.three {
+  bottom: 22%;
+  left: 45%;
+  animation-delay: 0.8s;
+}
+
+@keyframes jewel-spin {
+  from {
+    transform: rotateY(0deg) rotateX(12deg);
+  }
+  to {
+    transform: rotateY(360deg) rotateX(12deg);
+  }
+}
+
+@keyframes twinkle {
+  from {
+    opacity: 0.32;
+    scale: 0.72;
+  }
+  to {
+    opacity: 1;
+    scale: 1.18;
+  }
+}
