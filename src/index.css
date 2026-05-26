@@ -18,6 +18,11 @@ body {
   background: #fbf7ef;
 }
 
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
 ::selection {
   background: #d4ff4f;
   color: #17201c;
@@ -30,6 +35,10 @@ body {
 .ticker {
   width: max-content;
   animation: ticker 22s linear infinite;
+}
+
+.ticker:hover {
+  animation-play-state: paused;
 }
 
 @keyframes ticker {
@@ -154,6 +163,12 @@ body {
   animation-delay: 0.8s;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  section {
+    animation: section-rise 0.7s ease both;
+  }
+}
+
 @keyframes jewel-spin {
   from {
     transform: rotateY(0deg) rotateX(12deg);
@@ -171,5 +186,16 @@ body {
   to {
     opacity: 1;
     scale: 1.18;
+  }
+}
+
+@keyframes section-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

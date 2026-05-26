@@ -2,8 +2,10 @@ import { useMemo, useState } from "react";
 import {
   ArrowRight,
   Gem,
+  Heart,
   Menu,
   Rotate3D,
+  Search,
   ShoppingBag,
   Sparkles,
   Star,
@@ -41,6 +43,8 @@ const products = [
     price: 1290,
     badge: "Bestseller",
     shape: "ring",
+    rating: 4.9,
+    material: "18K yellow gold",
     image:
       "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=80"
   },
@@ -51,6 +55,8 @@ const products = [
     price: 980,
     badge: "New",
     shape: "necklace",
+    rating: 4.8,
+    material: "Freshwater pearl",
     image:
       "https://images.unsplash.com/photo-1611085583191-a3b181a88401?auto=format&fit=crop&w=900&q=80"
   },
@@ -61,6 +67,8 @@ const products = [
     price: 740,
     badge: "Limited",
     shape: "earrings",
+    rating: 4.7,
+    material: "Rose gold",
     image:
       "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=900&q=80"
   },
@@ -71,6 +79,8 @@ const products = [
     price: 1680,
     badge: "Exclusive",
     shape: "bracelet",
+    rating: 5.0,
+    material: "Certified diamonds",
     image:
       "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=900&q=80"
   },
@@ -81,6 +91,8 @@ const products = [
     price: 1120,
     badge: "New",
     shape: "ring",
+    rating: 4.8,
+    material: "Polished gold",
     image:
       "https://images.unsplash.com/photo-1603561596112-db1d5f2e6401?auto=format&fit=crop&w=900&q=80"
   },
@@ -91,6 +103,8 @@ const products = [
     price: 1390,
     badge: "Bestseller",
     shape: "necklace",
+    rating: 4.9,
+    material: "18K gold chain",
     image:
       "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=80"
   },
@@ -101,16 +115,20 @@ const products = [
     price: 620,
     badge: "Exclusive",
     shape: "earrings",
+    rating: 4.6,
+    material: "High polish gold",
     image:
       "https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=900&q=80"
   },
   {
     id: 8,
-    name: "Etoile Pavé Bracelet",
+    name: "Etoile Pave Bracelet",
     type: "Bracelet",
     price: 1840,
     badge: "Limited",
     shape: "bracelet",
+    rating: 4.9,
+    material: "Pave diamonds",
     image:
       "https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&w=900&q=80"
   }
@@ -128,6 +146,15 @@ function App() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cart, setCart] = useState([]);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  const visibleProducts = useMemo(() => {
+    if (activeCategory === "All") {
+      return products;
+    }
+
+    return products.filter((product) => `${product.type}s` === activeCategory);
+  }, [activeCategory]);
 
   const cartTotal = useMemo(
     () => cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
@@ -145,15 +172,7 @@ function App() {
         );
       }
 
-      return [
-        ...current,
-        {
-          key,
-          ...product,
-          ...options,
-          quantity: 1
-        }
-      ];
+      return [...current, { key, ...product, ...options, quantity: 1 }];
     });
     setSelectedProduct(null);
   }
@@ -167,8 +186,17 @@ function App() {
       />
       <Hero />
       <Ticker />
-      <CategoryGrid />
-      <ProductGrid onOpenProduct={setSelectedProduct} />
+      <CategoryGrid
+        activeCategory={activeCategory}
+        onSelectCategory={setActiveCategory}
+      />
+      <ProductGrid
+        products={visibleProducts}
+        activeCategory={activeCategory}
+        onSelectCategory={setActiveCategory}
+        onOpenProduct={setSelectedProduct}
+      />
+      <ExperienceBand />
       <CartPreview cart={cart} cartTotal={cartTotal} />
       <Footer />
 
@@ -198,7 +226,11 @@ function Header({ cartCount, mobileNavOpen, onMenuClick }) {
 
         <nav className="hidden items-center gap-8 text-sm font-semibold text-[#2ecc71] md:flex">
           {links.map((link) => (
-            <a key={link} href={`#${link.toLowerCase()}`} className="hover:text-[#8ff0b5]">
+            <a
+              key={link}
+              href={`#${link.toLowerCase()}`}
+              className="transition hover:text-[#8ff0b5]"
+            >
               {link}
             </a>
           ))}
@@ -249,8 +281,9 @@ function Hero() {
         alt="Fine jewelry collection"
         className="absolute inset-0 h-full w-full object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#171411]/92 via-[#171411]/64 to-[#171411]/12" />
-      <div className="relative mx-auto flex min-h-[92vh] max-w-7xl items-end px-5 pb-14 pt-32 sm:px-8 lg:px-10">
+      <div className="absolute inset-0 bg-gradient-to-r from-[#171411]/94 via-[#171411]/66 to-[#171411]/18" />
+      <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#fbf7ef] to-transparent" />
+      <div className="relative mx-auto grid min-h-[92vh] max-w-7xl items-end gap-10 px-5 pb-14 pt-32 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-10">
         <div className="max-w-3xl text-white">
           <p className="mb-5 inline-flex items-center gap-2 border border-white/16 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-lg">
             <Sparkles size={16} className="text-[#e7c884]" />
@@ -278,13 +311,31 @@ function Hero() {
             </a>
           </div>
         </div>
+
+        <div className="hidden justify-self-end lg:block">
+          <div className="relative w-[360px] border border-white/18 bg-white/10 p-4 text-white shadow-2xl backdrop-blur-xl">
+            <img
+              src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=85"
+              alt="AUREL featured necklace"
+              className="aspect-[4/5] w-full object-cover"
+            />
+            <div className="absolute -left-8 bottom-10 border border-white/18 bg-[#171411]/82 p-5 backdrop-blur-xl">
+              <p className="text-xs uppercase tracking-[0.22em] text-[#e7c884]">
+                Featured
+              </p>
+              <p className="mt-1 font-serif text-3xl">Lumiere Chain</p>
+              <p className="mt-2 text-sm text-white/70">18K gold - $1,390</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
 function Ticker() {
-  const text = "Free Shipping · 18K Gold · Certified Diamonds · Lifetime Care · Hand Finished ·";
+  const text =
+    "Free Shipping - 18K Gold - Certified Diamonds - Lifetime Care - Hand Finished -";
 
   return (
     <div className="overflow-hidden border-y border-[#e9dfcf] bg-[#171411] py-3 text-[#e7c884]">
@@ -298,20 +349,25 @@ function Ticker() {
   );
 }
 
-function CategoryGrid() {
+function CategoryGrid({ activeCategory, onSelectCategory }) {
   return (
     <section id="collections" className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10">
       <SectionHeading
         eyebrow="Collections"
         title="Four essential forms, crafted with quiet luxury."
-        text="Each category is presented with editorial imagery, subtle movement, and a clear path into the collection."
+        text="Choose a collection to filter the product grid and explore the pieces with a sharper shopping flow."
       />
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {categories.map((category) => (
-          <a
-            href="#jewels"
+          <button
+            type="button"
             key={category.name}
-            className="group relative aspect-[4/5] overflow-hidden bg-[#171411]"
+            onClick={() => onSelectCategory(category.name)}
+            className={`group relative aspect-[4/5] overflow-hidden bg-[#171411] text-left transition duration-500 ${
+              activeCategory === category.name
+                ? "ring-2 ring-[#1fa463] ring-offset-4 ring-offset-[#fbf7ef]"
+                : ""
+            }`}
           >
             <img
               src={category.image}
@@ -325,22 +381,42 @@ function CategoryGrid() {
                 <ArrowRight size={18} />
               </span>
             </div>
-          </a>
+          </button>
         ))}
       </div>
     </section>
   );
 }
 
-function ProductGrid({ onOpenProduct }) {
+function ProductGrid({ products, activeCategory, onSelectCategory, onOpenProduct }) {
+  const filters = ["All", ...categories.map((category) => category.name)];
+
   return (
     <section id="jewels" className="bg-[#f1eadf] px-5 py-20 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-7xl">
-        <SectionHeading
-          eyebrow="Fine Jewelry"
-          title="Signature pieces with interactive 3D viewing."
-          text="Every product card includes image, badge, type, price, hover actions, and a configurable product modal."
-        />
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <SectionHeading
+            eyebrow="Fine Jewelry"
+            title="Signature pieces with interactive 3D viewing."
+            text="Filter the collection, open a 3D viewer, choose product options, and add the finished configuration to cart."
+          />
+          <div className="flex flex-wrap gap-2">
+            {filters.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                onClick={() => onSelectCategory(filter)}
+                className={`px-4 py-3 text-sm font-semibold transition ${
+                  activeCategory === filter
+                    ? "bg-[#1fa463] text-white"
+                    : "border border-[#d8cbb8] bg-[#fbf7ef] text-[#171411] hover:border-[#1fa463]"
+                }`}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => (
             <ProductCard
@@ -357,16 +433,25 @@ function ProductGrid({ onOpenProduct }) {
 
 function ProductCard({ product, onOpenProduct }) {
   return (
-    <article className="group overflow-hidden border border-[#ded2c0] bg-[#fbf7ef]">
+    <article className="group overflow-hidden border border-[#ded2c0] bg-[#fbf7ef] shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl">
       <div className="relative aspect-[4/5] overflow-hidden bg-[#171411]">
         <img
           src={product.image}
           alt={product.name}
           className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
         />
-        <span className="absolute left-4 top-4 bg-[#fbf7ef] px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-[#171411]">
-          {product.badge}
-        </span>
+        <div className="absolute left-4 right-4 top-4 flex items-center justify-between gap-3">
+          <span className="bg-[#fbf7ef] px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-[#171411]">
+            {product.badge}
+          </span>
+          <button
+            type="button"
+            className="grid h-9 w-9 place-items-center rounded-full bg-white/86 text-[#171411] backdrop-blur"
+            aria-label="Save product"
+          >
+            <Heart size={16} />
+          </button>
+        </div>
         <div className="absolute inset-0 flex items-end justify-center gap-3 bg-[#171411]/0 p-4 opacity-0 transition group-hover:bg-[#171411]/54 group-hover:opacity-100">
           <button
             type="button"
@@ -389,7 +474,13 @@ function ProductCard({ product, onOpenProduct }) {
           {product.type}
         </p>
         <h3 className="mt-2 font-serif text-2xl">{product.name}</h3>
-        <p className="mt-3 text-lg font-semibold">${product.price.toLocaleString()}</p>
+        <div className="mt-3 flex items-center justify-between gap-3">
+          <p className="text-lg font-semibold">${product.price.toLocaleString()}</p>
+          <p className="flex items-center gap-1 text-sm font-semibold text-[#1fa463]">
+            <Star size={15} fill="currentColor" /> {product.rating}
+          </p>
+        </div>
+        <p className="mt-2 text-sm text-[#6f6558]">{product.material}</p>
       </div>
     </article>
   );
@@ -430,7 +521,7 @@ function ProductModal({ product, onClose, onAddToCart }) {
           <div className="grid min-h-[430px] place-items-center bg-[#171411] p-8 text-white">
             <div className="text-center">
               <p className="mb-6 inline-flex items-center gap-2 border border-white/16 px-4 py-2 text-sm text-[#e7c884]">
-                <Rotate3D size={17} /> 360° Interactive View
+                <Rotate3D size={17} /> 360 degree Interactive View
               </p>
               <JewelryViewer shape={product.shape} metalColor={metalColor} />
             </div>
@@ -438,7 +529,7 @@ function ProductModal({ product, onClose, onAddToCart }) {
 
           <div className="p-6 sm:p-8">
             <p className="text-sm uppercase tracking-[0.22em] text-[#88785f]">
-              {product.type} · {product.badge}
+              {product.type} - {product.badge}
             </p>
             <h3 className="mt-3 font-serif text-4xl">{product.name}</h3>
             <p className="mt-3 text-2xl font-semibold">
@@ -509,7 +600,8 @@ function ProductModal({ product, onClose, onAddToCart }) {
 }
 
 function JewelryViewer({ shape, metalColor }) {
-  const metal = metalColors.find((item) => item.name === metalColor)?.value ?? "#d7a84f";
+  const metal =
+    metalColors.find((item) => item.name === metalColor)?.value ?? "#d7a84f";
 
   return (
     <div className={`jewel-viewer ${shape}`} style={{ "--metal": metal }}>
@@ -545,6 +637,62 @@ function OptionButton({ active, onClick, children }) {
     >
       {children}
     </button>
+  );
+}
+
+function ExperienceBand() {
+  const items = [
+    {
+      icon: Gem,
+      title: "Certified materials",
+      text: "Diamond and gold details are surfaced clearly before checkout."
+    },
+    {
+      icon: Rotate3D,
+      title: "Interactive 3D",
+      text: "A rotating jewelry preview changes color with the selected metal."
+    },
+    {
+      icon: Search,
+      title: "Easy discovery",
+      text: "Category filters make the product grid feel dynamic and useful."
+    }
+  ];
+
+  return (
+    <section className="bg-[#10271c] px-5 py-20 text-white sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#8ff0b5]">
+              Assignment-ready details
+            </p>
+            <h2 className="mt-4 font-serif text-5xl leading-tight">
+              Built to show both craft and frontend thinking.
+            </h2>
+            <p className="mt-5 leading-8 text-white/68">
+              The interface goes beyond a static landing page with filtering,
+              configurable products, saved cart options, hover states, motion,
+              and a responsive luxury storefront layout.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {items.map((item) => (
+              <article
+                key={item.title}
+                className="border border-white/10 bg-white/[0.06] p-5 backdrop-blur"
+              >
+                <item.icon className="text-[#8ff0b5]" size={28} />
+                <h3 className="mt-5 font-serif text-2xl">{item.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-white/62">
+                  {item.text}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -585,7 +733,7 @@ function CartPreview({ cart, cartTotal }) {
                   <div>
                     <h3 className="font-serif text-2xl">{item.name}</h3>
                     <p className="mt-1 text-sm text-[#6f6558]">
-                      {item.karat} · {item.diamondSize} · {item.metalColor}
+                      {item.karat} - {item.diamondSize} - {item.metalColor}
                     </p>
                     <p className="mt-2 text-sm font-semibold">
                       Quantity: {item.quantity}
@@ -638,12 +786,12 @@ function Footer() {
           <div className="mt-4 grid gap-3 text-white/68">
             <p>care@aureljewels.com</p>
             <p>+1 212 555 0148</p>
-            <p>New York · Paris · Online</p>
+            <p>New York - Paris - Online</p>
           </div>
         </div>
       </div>
       <div className="mx-auto mt-10 max-w-7xl border-t border-white/10 pt-6 text-sm text-white/48">
-        © 2026 AUREL Fine Jewelry. All rights reserved.
+        (c) 2026 AUREL Fine Jewelry. All rights reserved.
       </div>
     </footer>
   );
