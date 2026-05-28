@@ -52,11 +52,22 @@ a {
 
 .jewel-viewer {
   --metal: #d7a84f;
+  --angle: 0deg;
   position: relative;
   width: min(64vw, 320px);
   height: min(64vw, 320px);
   margin: 0 auto;
   perspective: 900px;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.jewel-viewer.is-draggable {
+  cursor: grab;
+}
+
+.jewel-viewer.is-draggable:active {
+  cursor: grabbing;
 }
 
 .jewel-core {
@@ -64,6 +75,12 @@ a {
   inset: 18%;
   transform-style: preserve-3d;
   animation: jewel-spin 7s linear infinite;
+}
+
+.jewel-viewer.is-draggable .jewel-core {
+  animation: none;
+  transform: rotateY(var(--angle)) rotateX(12deg);
+  transition: transform 80ms linear;
 }
 
 .ring .jewel-core {
@@ -87,6 +104,16 @@ a {
   box-shadow: 0 0 42px rgba(255, 255, 255, 0.6);
 }
 
+.ring .jewel-core::after {
+  content: "";
+  position: absolute;
+  inset: -28px;
+  border: 10px solid rgba(255, 255, 255, 0.2);
+  border-left-color: rgba(0, 0, 0, 0.22);
+  border-radius: 999px;
+  transform: translateZ(-24px);
+}
+
 .necklace .jewel-core {
   border: 18px solid var(--metal);
   border-top-color: transparent;
@@ -104,6 +131,17 @@ a {
   transform: translateX(-50%);
   background: linear-gradient(160deg, #ffffff, #d4ebff 45%, #ffffff);
   clip-path: polygon(50% 0, 100% 58%, 50% 100%, 0 58%);
+}
+
+.necklace .jewel-core::after {
+  content: "";
+  position: absolute;
+  inset: -18px;
+  border: 8px solid rgba(255, 255, 255, 0.18);
+  border-top-color: transparent;
+  border-left-color: rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 999px 999px;
+  transform: translateZ(-22px);
 }
 
 .earrings .jewel-core {
@@ -161,6 +199,17 @@ a {
   bottom: 22%;
   left: 45%;
   animation-delay: 0.8s;
+}
+
+.jewel-drag-hint {
+  position: absolute;
+  left: 50%;
+  bottom: -34px;
+  width: max-content;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 @media (prefers-reduced-motion: no-preference) {

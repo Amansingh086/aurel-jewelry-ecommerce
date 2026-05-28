@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   Gem,
@@ -600,15 +600,69 @@ function ProductModal({ product, onClose, onAddToCart }) {
 }
 
 function JewelryViewer({ shape, metalColor }) {
+  const canRotate = shape === "ring" || shape === "necklace";
+  const viewerRef = useRef(null);
+  const dragRef = useRef({ active: false, startX: 0, startAngle: 0 });
+  const [angle, setAngle] = useState(0);
   const metal =
     metalColors.find((item) => item.name === metalColor)?.value ?? "#d7a84f";
 
+  function handlePointerDown(event) {
+    if (!canRotate) {
+      return;
+    }
+
+    dragRef.current = {
+      active: true,
+      startX: event.clientX,
+      startAngle: angle
+    };
+    viewerRef.current?.setPointerCapture(event.pointerId);
+  }
+
+  function handlePointerMove(event) {
+    if (!dragRef.current.active) {
+      return;
+    }
+
+    const movement = event.clientX - dragRef.current.startX;
+    setAngle(dragRef.current.startAngle + movement * 0.85);
+  }
+
+  function handlePointerEnd(event) {
+    dragRef.current.active = false;
+    viewerRef.current?.releasePointerCapture(event.pointerId);
+  }
+
   return (
-    <div className={`jewel-viewer ${shape}`} style={{ "--metal": metal }}>
+    <div
+      ref={viewerRef}
+      className={`jewel-viewer ${shape} ${canRotate ? "is-draggable" : ""}`}
+      style={{ "--metal": metal, "--angle": `${angle}deg` }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerEnd}
+      onPointerCancel={handlePointerEnd}
+      role={canRotate ? "slider" : "img"}
+      aria-label={
+        canRotate
+          ? `Drag or swipe to rotate ${shape} 360 degrees`
+          : `${shape} preview`
+      }
+      aria-valuemin={0}
+      aria-valuemax={360}
+      aria-valuenow={Math.round(((angle % 360) + 360) % 360)}
+      tabIndex={canRotate ? 0 : undefined}
+    >
       <div className="jewel-core" />
       <div className="jewel-sparkle one" />
       <div className="jewel-sparkle two" />
       <div className="jewel-sparkle three" />
+      {canRotate && (
+        <p className="jewel-drag-hint">
+          Drag or swipe to rotate
+        </p>
+      )}
     </div>
   );
 }
