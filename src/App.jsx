@@ -523,7 +523,7 @@ function ProductModal({ product, onClose, onAddToCart }) {
               <p className="mb-6 inline-flex items-center gap-2 border border-white/16 px-4 py-2 text-sm text-[#e7c884]">
                 <Rotate3D size={17} /> 360 degree Interactive View
               </p>
-              <JewelryViewer shape={product.shape} metalColor={metalColor} />
+              <JewelryViewer product={product} metalColor={metalColor} />
             </div>
           </div>
 
@@ -599,24 +599,21 @@ function ProductModal({ product, onClose, onAddToCart }) {
   );
 }
 
-function JewelryViewer({ shape, metalColor }) {
-  const canRotate = shape === "ring" || shape === "necklace";
+function JewelryViewer({ product, metalColor }) {
   const viewerRef = useRef(null);
   const dragRef = useRef({ active: false, startX: 0, startAngle: 0 });
+  const [isDragging, setIsDragging] = useState(false);
   const [angle, setAngle] = useState(0);
   const metal =
     metalColors.find((item) => item.name === metalColor)?.value ?? "#d7a84f";
 
   function handlePointerDown(event) {
-    if (!canRotate) {
-      return;
-    }
-
     dragRef.current = {
       active: true,
       startX: event.clientX,
       startAngle: angle
     };
+    setIsDragging(true);
     viewerRef.current?.setPointerCapture(event.pointerId);
   }
 
@@ -631,38 +628,33 @@ function JewelryViewer({ shape, metalColor }) {
 
   function handlePointerEnd(event) {
     dragRef.current.active = false;
+    setIsDragging(false);
     viewerRef.current?.releasePointerCapture(event.pointerId);
   }
 
   return (
     <div
       ref={viewerRef}
-      className={`jewel-viewer ${shape} ${canRotate ? "is-draggable" : ""}`}
+      className={`jewel-viewer product-viewer ${isDragging ? "is-dragging" : ""}`}
       style={{ "--metal": metal, "--angle": `${angle}deg` }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerEnd}
       onPointerCancel={handlePointerEnd}
-      role={canRotate ? "slider" : "img"}
-      aria-label={
-        canRotate
-          ? `Drag or swipe to rotate ${shape} 360 degrees`
-          : `${shape} preview`
-      }
+      role="slider"
+      aria-label={`Drag or swipe to rotate ${product.name} 360 degrees`}
       aria-valuemin={0}
       aria-valuemax={360}
       aria-valuenow={Math.round(((angle % 360) + 360) % 360)}
-      tabIndex={canRotate ? 0 : undefined}
+      tabIndex={0}
     >
-      <div className="jewel-core" />
+      <div className="jewel-photo-wrap">
+        <img src={product.image} alt={product.name} className="jewel-photo" />
+      </div>
       <div className="jewel-sparkle one" />
       <div className="jewel-sparkle two" />
       <div className="jewel-sparkle three" />
-      {canRotate && (
-        <p className="jewel-drag-hint">
-          Drag or swipe to rotate
-        </p>
-      )}
+      <p className="jewel-drag-hint">Drag or swipe to rotate</p>
     </div>
   );
 }
